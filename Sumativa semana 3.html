@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Ingreso de Ficha Médica</title>
+</head>
+<body>
+    <h2>Ingreso de Ficha Médica</h2>
+    <form id="fichaMedicaForm">
+        <label for="rut">Rut:</label><br>
+        <input type="text" id="rut" name="rut" required><br><br>
+
+        <label for="nombres">Nombres:</label><br>
+        <input type="text" id="nombres" name="nombres" required><br><br>
+
+        <label for="apellidos">Apellidos:</label><br>
+        <input type="text" id="apellidos" name="apellidos" required><br><br>
+
+        <label for="direccion">Dirección:</label><br>
+        <input type="text" id="direccion" name="direccion" required><br><br>
+
+        <label for="ciudad">Ciudad:</label><br>
+        <input type="text" id="ciudad" name="ciudad" required><br><br>
+
+        <label for="telefono">Teléfono:</label><br>
+        <input type="tel" id="telefono" name="telefono" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="fechaNacimiento">Fecha de Nacimiento:</label><br>
+        <input type="date" id="fechaNacimiento" name="fechaNacimiento" required><br><br>
+
+        <label for="estadoCivil">Estado Civil:</label><br>
+        <select id="estadoCivil" name="estadoCivil" required>
+            <option value="soltero">Soltero</option>
+            <option value="casado">Casado</option>
+            <option value="divorciado">Divorciado</option>
+            <option value="viudo">Viudo</option>
+        </select><br><br>
+
+        <label for="comentarios">Comentarios:</label><br>
+        <textarea id="comentarios" name="comentarios"></textarea><br><br>
+
+        <button type="button" onclick="guardarRegistro()">Guardar</button>
+        <button type="reset">Limpiar</button>
+        <button type="button" onclick="cerrarFormulario()">Cerrar</button>
+    </form>
+
+    <h2>Buscar Ficha Médica</h2>
+    <form id="buscarForm">
+        <label for="buscarApellido">Buscar por Apellido:</label><br>
+        <input type="text" id="buscarApellido" name="buscarApellido"><br><br>
+        <button type="button" onclick="buscarPorApellido()">Buscar</button>
+    </form>
+
+    <script>
+        // Función para guardar el registro
+        function guardarRegistro() {
+            // Obtener todos los valores del formulario
+            const campos = [
+                'rut', 'nombres', 'apellidos', 'direccion',
+                'ciudad', 'telefono', 'email', 'fechaNacimiento',
+                'estadoCivil'
+            ];
+            // Verificar si todos los campos requeridos están llenos
+            for (const campo of campos) {
+                if (!document.getElementById(campo).value) {
+                    alert(`Por favor, complete el campo ${campo}.`);
+                    return;
+                }
+            }
+
+            const rut = document.getElementById('rut').value;
+            if (localStorage.getItem(rut)) {
+                if (confirm('El registro ya existe. ¿Desea sobrescribirlo?')) {
+                    almacenarDatos(rut);
+                }
+            } else {
+                almacenarDatos(rut);
+            }
+        }
+
+        function almacenarDatos(rut) {
+            const datos = {
+                nombres: document.getElementById('nombres').value,
+                apellidos: document.getElementById('apellidos').value,
+                direccion: document.getElementById('direccion').value,
+                ciudad: document.getElementById('ciudad').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email').value,
+                fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                estadoCivil: document.getElementById('estadoCivil').value,
+                comentarios: document.getElementById('comentarios').value
+            };
+            localStorage.setItem(rut, JSON.stringify(datos));
+            alert('Registro guardado exitosamente.');
+        }
+
+        function buscarPorApellido() {
+            const apellido = document.getElementById('buscarApellido').value.toLowerCase();
+            let encontrado = false;
+            if (!apellido) {
+                alert('Por favor, ingrese un apellido para buscar.');
+                return;
+            }
+            console.log('Buscando apellido:', apellido);
+            for (let i = 0; i < localStorage.length; i++) {
+                const clave = localStorage.key(i);
+                const registro = JSON.parse(localStorage.getItem(clave));
+                console.log('Registro actual:', registro);
+                // Verificar si 'apellidos' está definido antes de llamar 'toLowerCase'
+                if (registro.apellidos && registro.apellidos.toLowerCase().includes(apellido)) {
+                    alert(`Registro encontrado:\n${JSON.stringify(registro, null, 2)}`);
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado) {
+                alert('No se encontró ningún registro con ese apellido.');
+            }
+        }
+
+        function cerrarFormulario() {
+            window.close();
+        }
+    </script>
+</body>
+</html>
